@@ -25,7 +25,7 @@ const upload = multer({storage});
 
 app.post("/upload", upload.single("image"), (req: Request, res: Response) => {
   const filePath = path.resolve(req.file!.path);
-  console.log(`File uploaded to: ${filePath}`);
+  console.log(`File uploaded to : ${filePath}`);
   res.json({ prediction: "తెలుగు భాష చాలా అందమైనది మరియు సంపన్నమైనది." });
   // Call Python script with filePath
   //   exec(`python predict.py ${filePath}`, (error, stdout, stderr) => {
