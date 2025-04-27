@@ -26,21 +26,23 @@ const upload = multer({storage});
 app.post("/upload", upload.single("image"), (req: Request, res: Response) => {
   const filePath = path.resolve(req.file!.path);
   console.log(`File uploaded to : ${filePath}`);
-  res.json({ prediction: "తెలుగు భాష చాలా అందమైనది మరియు సంపన్నమైనది." });
+  // res.json({ prediction: "తెలుగు భాష చాలా అందమైనది మరియు సంపన్నమైనది." });
   // Call Python script with filePath
-  //   exec(`python predict.py ${filePath}`, (error, stdout, stderr) => {
-  //     if (error) {
-  //       console.error(`Error: ${error.message}`);
-  //       return res.status(500).json({ error: "Prediction failed" });
-  //     }
-  //     if (stderr) {
-  //       console.error(`Stderr: ${stderr}`);
-  //       return res.status(500).json({ error: "Prediction error" });
-  //     }
 
-  //     console.log(`Prediction result: ${stdout}`);
-  //     res.json({ prediction: stdout.trim() });
-  //   });
+    exec(`python ../mp_rsnet/predict.py ${filePath}`, (error, stdout, stderr) => {
+      console.log(`Python script executed with file: ${filePath} , stdout: ${stdout}, stderr: ${stderr}`);
+      if (error) {
+        console.error(`Error: ${error.message}`);
+        return res.status(500).json({ error: "Prediction failed" });
+      }
+      if (stderr) {
+        console.error(`Stderr: ${stderr}`);
+        return res.status(500).json({ error: "Prediction error" });
+      }
+
+      console.log(`Prediction result: ${stdout}`);
+      res.json({ prediction: stdout.trim() });
+    });
 });
 
 app.listen(PORT, () => {
