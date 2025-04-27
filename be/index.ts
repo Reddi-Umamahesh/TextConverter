@@ -10,7 +10,18 @@ const PORT = 3000;
 app.use(cors());
 
 // Setup multer for file uploads
-const upload = multer({ dest: path.join(__dirname, "../uploads/") });
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, "../uploads"));
+  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    const baseName = path.basename(file.originalname, ext).replace(/\s+/g, "_");
+    const uniqueName = `${baseName}-${Date.now()}${ext}`;
+    cb(null, uniqueName);
+  },
+});
+const upload = multer({storage});
 
 app.post("/upload", upload.single("image"), (req: Request, res: Response) => {
   const filePath = path.resolve(req.file!.path);
